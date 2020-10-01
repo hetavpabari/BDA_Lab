@@ -1,0 +1,53 @@
+db.Employee.insert({_id:1, "EmployeeID":"2017069", "Name":"Hetav", "Department":"CSE", "Age":20,DeptNo:1001});
+	WriteResult({ "nInserted" : 1 })
+
+db.Employee.save({_id:2, "EmployeeID":"2017056", "Name":"Parth", "Department":"CSE", "Age":20,DeptNo:1001});
+	WriteResult({ "nMatched" : 0, "nUpserted" : 1, "nModified" : 0, "_id" : 2 })
+
+db.Employee.update({_id:3, "EmployeeID":"2016056", "Name":"Raghavendra", "Department":"CSE", "Age":21},{$set:{DeptNo:1001}},{upsert:true});
+	WriteResult({ "nMatched" : 0, "nUpserted" : 1, "nModified" : 0, "_id" : 3 })
+
+db.Employee.insert({_id:4, "EmployeeID":"2017055", "Name":"Nikhil", "Department":"ESE", "Age":21,DeptNo:1002});
+	WriteResult({ "nInserted" : 1 })
+
+db.Employee.insert({_id:5, "EmployeeID":"2017111", "Name":"Tarun MK", "Department":"ECE", "Age":21,DeptNo:1003});
+	WriteResult({ "nInserted" : 1 })
+
+db.Department.insert({_id:1,deptname:"CSE",deptno:1001});
+	WriteResult({ "nInserted" : 1 })
+
+db.Department.save({_id:2,deptname:"ISE",deptno:1002});
+	WriteResult({ "nMatched" : 0, "nUpserted" : 1, "nModified" : 0, "_id" : 2 })
+
+db.Department.update({_id:3,deptname:"ECE"},{$set:{deptno:1003}},{upsert:true});
+	WriteResult({ "nMatched" : 0, "nUpserted" : 1, "nModified" : 0, "_id" : 3 })
+
+db.Department.insert({_id:4,deptname:"EEE",deptno:1004});
+	WriteResult({ "nInserted" : 1 })
+
+db.Department.insert({_id:5,deptname:"ME",deptno:1005});
+	WriteResult({ "nInserted" : 1 })
+
+db.Employee.update({_id:3},{$set:{"Name":"Abhishek","Age":30}},{upsert:false});
+	WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+db.Employee.update({_id:4},{$set:{DOJ:"12 sep","Age":30}});
+	WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+db.Employee.update({_id:1},{$unset:{"Age":""}});
+	WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+db.Employee.find({"Name": /^A/});
+id	Age	Department	EmployeeID	Name	DeptNo
+3	30	CSE		2016056		Abhisekh	1001
+
+db.Employee.find({"DeptNo": { $gt: 1000, $lt: 1006}},{Name:true,DeptNo:true});
+_id		Name		DeptNo
+1		Hetav		1001
+2		Parth		1001
+3		Abhisekh		1001
+4		Nikhil		1002
+5		Tarun MK		1003
+
+db.Employee.find({"Age":{"$gt":30}});
+_id
