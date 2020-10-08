@@ -1,0 +1,148 @@
+use bank
+	switched to db bank
+
+ db.createCollection("customer")
+	{ "ok" : 1 }
+
+ db.Student.insert( [{
+ "cust_id" : "c1",
+ "acc_bal" : 1500,
+ "acc_type" : "Z"
+ },
+ {
+ "cust_id" : "c2",
+ "acc_bal" : 300,
+ "acc_type" : "A"
+},
+ {
+ "cust_id" : "c3",
+ "acc_bal" : 150,
+ "acc_type" : "Z"
+},
+ {
+ "cust_id" : "c1",
+ "acc_bal" : 1000,
+ "acc_type" : "A"
+ },
+ {
+ "cust_id" : "c2",
+ "acc_bal" : 15000,
+ "acc_type" : "Z"
+ },
+ {
+ "cust_id" : "c3",
+ "acc_bal" : 1200,
+"acc_type" : "Z"
+ } 
+])
+BulkWriteResult({
+	"writeErrors" : [ ],
+	"writeConcernErrors" : [ ],
+	"nInserted" : 6,
+	"nUpserted" : 0,
+	"nMatched" : 0,
+	"nModified" : 0,
+	"nRemoved" : 0,
+	"upserted" : [ ]
+})
+
+> db.Student.renameCollection("customer")
+{
+	"ok" : 0,
+	"errmsg" : "target namespace exists",
+	"code" : 48,
+	"codeName" : "NamespaceExists"
+}
+
+> db.customer.find().pretty()
+{
+	"_id" : ObjectId("5f7ed57336e4bcc4573fdbca"),
+	"cust_id" : "c1",
+	"acc_bal" : 1500,
+	"acc_type" : "Z"
+}
+{
+	"_id" : ObjectId("5f7ed57336e4bcc4573fdbcb"),
+	"cust_id" : "c2",
+	"acc_bal" : 300,
+	"acc_type" : "A"
+}
+{
+	"_id" : ObjectId("5f7ed57336e4bcc4573fdbcc"),
+	"cust_id" : "c3",
+	"acc_bal" : 150,
+	"acc_type" : "Z"
+}
+{
+	"_id" : ObjectId("5f7ed57336e4bcc4573fdbcd"),
+	"cust_id" : "c1",
+	"acc_bal" : 1000,
+	"acc_type" : "A"
+}
+{
+	"_id" : ObjectId("5f7ed57336e4bcc4573fdbce"),
+	"cust_id" : "c2",
+	"acc_bal" : 15000,
+	"acc_type" : "Z"
+}
+{
+	"_id" : ObjectId("5f7ed57336e4bcc4573fdbcf"),
+	"cust_id" : "c3",
+	"acc_bal" : 1200,
+	"acc_type" : "Z"
+}
+
+
+ db.customer.find({acc_bal:{$gt:1200}, acc_type:"Z"}).pretty()
+{
+	"_id" : ObjectId("5f7ed57336e4bcc4573fdbca"),
+	"cust_id" : "c1",
+	"acc_bal" : 1500,
+	"acc_type" : "Z"
+}
+{
+	"_id" : ObjectId("5f7ed57336e4bcc4573fdbce"),
+	"cust_id" : "c2",
+	"acc_bal" : 15000,
+	"acc_type" : "Z"
+}
+
+> db.customer.aggregate([
+  {
+         $group: {
+            _id: "$cust_id",
+           min_bal: {$min: "$acc_bal"},
+           max_bal: {$max: "$acc_bal"}
+       }
+ ]);
+{ "_id" : "c3", "min_bal" : 150, "max_bal" : 1200 }
+{ "_id" : "c2", "min_bal" : 300, "max_bal" : 15000 }
+{ "_id" : "c1", "min_bal" : 1000, "max_bal" : 1500 }
+
+$ mongoexport --db bank --collection customer --out Bank_customer.json
+2020-10-08T14:37:55.048+0530	connected to: localhost
+2020-10-08T14:37:55.049+0530	exported 6 records
+
+
+ use bank
+	switched to db bank
+
+db.customer.drop()
+	true
+
+show dbs
+	Student  0.000GB
+	admin    0.000GB
+	bank     0.000GB
+	config   0.000GB
+	local    0.000GB
+
+show collections
+
+$ mongoimport --db bank --collection imported_customer --type csv --file bank-data.csv --headerline
+2020-10-08T15:04:32.038+0530	connected to: localhost
+2020-10-08T15:04:32.240+0530	imported 600 documents
+
+$ mongoexport --db bank  --collection customer -f id,cust_id,Balance,Type --type csv --out export_customer.csv
+2020-10-08T15:17:40.877+0530	connected to: localhost
+2020-10-08T15:17:40.878+0530	exported 6 records
