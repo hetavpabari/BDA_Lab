@@ -1,0 +1,7 @@
+id,cust_id,acc_bal,acc_type
+,c1,1500,Z
+,c2,15000,Z
+,c3,150,Z
+,c2,300,A
+,c3,1200,Z
+,c1,1000,A
