@@ -1,0 +1,62 @@
+use Student
+	switched to db Student
+
+db.createCollection("Stud")
+	{"ok":1}
+
+db.Stud.insert({_id:1,name:"Hetav",rollno:10,age:20,contact:1111,email:"hetav@gmail.com"})
+	WriteResult({ "nInserted" : 1 })
+db.Stud.insert({_id:2,name:"abc",rollno:11,age:20,contact:1112,email:"abc@gmail.com"})
+	WriteResult({ "nInserted" : 1 })
+db.Stud.insert({_id:3,name:"xyz",rollno:5,age:20,contact:1113,email:"xyz@gmail.com"})
+	WriteResult({ "nInserted" : 1 })
+db.Stud.insert({_id:4,name:"def",rollno:6,age:20,contact:1114,email:"def@gmail.com"})
+	WriteResult({ "nInserted" : 1 })
+
+db.Stud.find()
+	_id	name	rollno	age	contact	email
+	1	Hetav	10	20	1111	hetav@gmail.com
+	2	abc	11	20	1112	abc@gmail.com
+	3	xyz	5	20	1113	xyz@gmail.com
+	4	def	6	20	1114	def@gmail.com
+
+db.Stud.update({rollno:10},{$set:{email:"hetav@yahoo.com"}})
+	WriteResult({ "nMatched" : 0, "nUpserted" : 0, "nModified" : 0 })
+
+db.Stud.find()
+	_id	name	rollno	age	contact	email
+	1	Hetav	10	20	1111	hetav@yahoo.com
+	2	abc	11	20	1112	abc@gmail.com
+	3	xyz	5	20	1113	xyz@gmail.com
+	4	def	6	20	1114	def@gmail.com
+
+db.Stud.replaceOne({rollno:11},{name:"fem",rollno:11,age:20,contact:1113,email:"abc@gmail.com"})
+	_id	acknowledged	matchedCount	modifiedCount
+		true		1		1
+
+$ mongoexport --db Student --collection Student --out Student.json
+2020-10-08T14:26:27.455+0530	connected to: localhost
+2020-10-08T14:26:27.455+0530	exported 4 records
+
+mongo
+
+use Student
+	switched to db Student
+ 
+db.Student.drop()
+	true
+
+show collections 
+
+
+$ mongoexport --db Student --collection Student -f id,RollNo,Age,Contact,Name,Email --type csv --out Student.csv
+2020-10-08T14:55:10.975+0530	connected to: localhost
+2020-10-08T14:55:10.975+0530	exported 4 records
+
+
+
+
+
+
+
+
