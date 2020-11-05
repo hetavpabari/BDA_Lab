@@ -1,0 +1,59 @@
+cqlsh> CREATE KEYSPACE Employees WITH replication = {'class':'SimpleStrategy','replication_factor':3};
+cqlsh> use employees;
+cqlsh:employees> CREATE COLUMNFAMILY employee_info(Emp_id INT PRIMARY KEY, Emp_name VARCHAR, Designation VARCHAR, Date_of_joining VARCHAR, Salary FLOAT, Dept_name VARCHAR);
+cqlsh:employees> 
+cqlsh:employees> BEGIN BATCH INSERT INTO employee_info (emp_id , emp_name , designation , date_of_joining , salary , dept_name ) values (119,'Rounak','CEO','01/06/2020',10000, 'IT'); 
+             ... INSERT INTO employee_info (emp_id , emp_name , designation , date_of_joining , salary , dept_name ) values (120,'Sai', 'CFO','01/01/2020',5000,'Finance');
+             ... INSERT INTO employee_info (emp_id , emp_name , designation , date_of_joining , salary , dept_name ) values (121,'Saif', 'HR head','01/04/2020',4000,'SALES');
+             ... INSERT INTO employee_info (emp_id , emp_name , designation , date_of_joining , salary , dept_name ) values (122,'Hetav','CTO','01/06/2020',10000, 'SALES'); APPLY BATCH;
+cqlsh:employees> SELECT * FROM employee_info;
+
+ emp_id | date_of_joining | dept_name | designation | emp_name | salary
+--------+-----------------+-----------+-------------+----------+--------
+    120 |      01/01/2020 |   Finance |         CFO |      Sai |   5000
+    122 |      01/06/2020 |     SALES |         CTO |    Hetav |  10000
+    121 |      01/04/2020 |     SALES |     HR head |     Saif |   4000
+    119 |      01/06/2020 |        IT |         CEO |   Rounak |  10000
+
+(4 rows)
+cqlsh:employees> UPDATE employee_info SET emp_name = 'Rohit',dept_name = 'IT' WHERE emp_id = 121;
+cqlsh:employees> SELECT * FROM employee_info;
+
+ emp_id | date_of_joining | dept_name | designation | emp_name | salary
+--------+-----------------+-----------+-------------+----------+--------
+    120 |      01/01/2020 |   Finance |         CFO |      Sai |   5000
+    122 |      01/06/2020 |     SALES |         CTO |    Hetav |  10000
+    121 |      01/04/2020 |        IT |     HR head |    Rohit |   4000
+    119 |      01/06/2020 |        IT |         CEO |   Rounak |  10000
+
+(4 rows)
+cqlsh:employees> ALTER TABLE employee_info ADD PROJECT SET<VARCHAR>;
+cqlsh:employees> UPDATE employee_info SET project=project+{'Covid-19','BDA Analysis'} WHERE emp_id=122;
+cqlsh:employees> INSERT INTO employee_info (emp_id , emp_name , designation , date_of_joining , salary , dept_name ) values (123,'Random Guy','Manager','01/06/2020',10000, 'IT') USING TTL 15;
+cqlsh:employees> SELECT TTL(designation) FROM employee_info where emp_id=123;
+
+ ttl(designation)
+------------------
+                5
+
+(1 rows)
+cqlsh:employees> SELECT * FROM employee_info;
+
+ emp_id | date_of_joining | dept_name | designation | emp_name | project                      | salary
+--------+-----------------+-----------+-------------+----------+------------------------------+--------
+    120 |      01/01/2020 |   Finance |         CFO |      Sai |                         null |   5000
+    122 |      01/06/2020 |     SALES |         CTO |    Hetav | {'BDA Analysis', 'Covid-19'} |  10000
+    121 |      01/04/2020 |        IT |     HR head |    Rohit |                         null |   4000
+    119 |      01/06/2020 |        IT |         CEO |   Rounak |                         null |  10000
+
+(4 rows)
+cqlsh:employees> 
+cqlsh:employees> 
+cqlsh:employees> 
+cqlsh:employees> SELECT TTL(designation) FROM employee_info where emp_id=123;
+
+ ttl(designation)
+------------------
+
+(0 rows)
+cqlsh:employees>
