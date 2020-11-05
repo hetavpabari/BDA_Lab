@@ -1,0 +1,65 @@
+cqlsh> CREATE KEYSPACE Library WITH replication = {'class':'SimpleStrategy','replication_factor':3};
+cqlsh> use Library;
+cqlsh:library> CREATE COLUMN FAMILY library_info(stud_id int, counter_value counter, stud_name VARCHAR, book_name VARCHAR, book_id INT, DOI VARCHAR, PRIMARY KEY(stud_id,stud_name,book_name,book_id,doi));
+cqlsh:library> UPDATE library_info set counter_value=counter_value+1 where stud_id=112 and stud_name='Rounak' and book_name='BDA' and book_id=1 and doi='01/01/2020';
+cqlsh:library> UPDATE library_info set counter_value=counter_value+1 where stud_id=112 and stud_name='Rounak' and book_name='BDA' and book_id=1 and doi='01/01/2020';
+cqlsh:library> UPDATE library_info set counter_value=counter_value+1 where stud_id=113 and stud_name='Hetav' and book_name='DSR' and book_id=2 and doi='01/05/2020';
+cqlsh:library> 
+cqlsh:library> 
+cqlsh:library> SELECT * FROM library_info;
+
+ stud_id | stud_name | book_name | book_id | doi        | counter_value
+---------+-----------+-----------+---------+------------+---------------
+     113 |       Hetav |       DSR |       2 | 01/05/2020 |             1
+     112 |    Rounak |       BDA |       1 | 01/01/2020 |             2
+
+(2 rows)
+cqlsh:library> SELECT * FROM library_info WHERE stud_id=112;
+
+ stud_id | stud_name | book_name | book_id | doi        | counter_value
+---------+-----------+-----------+---------+------------+---------------
+     112 |    Rounak |       BDA |       1 | 01/01/2020 |             2
+
+(1 rows)
+cqlsh:library> SELECT book_name,counter FROM library_info WHERE stud_id=112;
+InvalidRequest: Error from server: code=2200 [Invalid query] message="Undefined column name counter"
+cqlsh:library> SELECT book_name,counter_value FROM library_info WHERE stud_id=112;
+
+ book_name | counter_value
+-----------+---------------
+       BDA |             2
+
+(1 rows)
+cqlsh:library> 
+cqlsh:library> COPY library_info (stud_id , counter_value , stud_name , book_name , book_id , doi ) TO 'library.csv' WITH HEADER=TRUE;
+Using 3 child processes
+
+Starting copy of library.library_info with columns [stud_id, counter_value, stud_name, book_name, book_id, doi].
+Processed: 2 rows; Rate:       4 rows/s; Avg. rate:       4 rows/s
+2 rows exported to 1 files in 0.499 seconds.
+cqlsh:library> 
+cqlsh:library> truncate library_infol
+           ... ;
+InvalidRequest: Error from server: code=2200 [Invalid query] message="unconfigured table library_infol"
+cqlsh:library> truncate library_info ;
+cqlsh:library> SELECT * FROM library_info;
+
+ stud_id | stud_name | book_name | book_id | doi | counter_value
+---------+-----------+-----------+---------+-----+---------------
+
+(0 rows)
+cqlsh:library> COPY library_info (stud_id , counter_value , stud_name , book_name , book_id , doi ) FROM 'library.csv' WITH HEADER=TRUE;
+Using 3 child processes
+
+Starting copy of library.library_info with columns [stud_id, counter_value, stud_name, book_name, book_id, doi].
+Processed: 2 rows; Rate:       4 rows/s; Avg. rate:       6 rows/s
+2 rows imported from 1 files in 0.362 seconds (0 skipped).
+cqlsh:library> SELECT * FROM library_info;
+
+ stud_id | stud_name | book_name | book_id | doi        | counter_value
+---------+-----------+-----------+---------+------------+---------------
+     113 |       Hetav |       DSR |       2 | 01/05/2020 |             1
+     112 |    Rounak |       BDA |       1 | 01/01/2020 |             2
+
+(2 rows)
+cqlsh:library> 
