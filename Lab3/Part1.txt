@@ -1,6 +1,6 @@
 use Student
 	switched to db Student
-
+# adding comment
 db.createCollection("Stud")
 	{"ok":1}
 
